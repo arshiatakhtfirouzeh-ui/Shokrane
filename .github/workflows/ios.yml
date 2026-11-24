@@ -1,0 +1,53 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    env:
+      UV_PYTHON: "3.14"
+      PYTHONUTF8: "1"
+      FLET_CLI_LOG_FORMAT: github
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system --upgrade pip
+          uv pip install --system -r requirements.txt
+
+      - name: Download fonts
+        run: |
+          python3 tools/get_fonts.py || echo "Font download failed or skipped"
+
+      - name: Build Flet iOS IPA
+        uses: flet-dev/action-build-app@v1
+        with:
+          target: ipa
+          # اگر گواهی و پروفایل اد-هاک یا اپ‌استور نداری، بدون امضا خروجی خام میده:
+          sign: false
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shokraneh-ipa
+          path: build/ipa/
+          if-no-files-found: warn
