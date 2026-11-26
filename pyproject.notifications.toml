@@ -3,7 +3,7 @@
 # The plugin (flet-android-notifications, "Alpha") needs a manual Gradle / manifest patch -> tools/patch_android.py.
 [project]
 name = "shokraneh"
-version = "1.0.0"
+version = "1.2.0"
 description = "Shokraneh (شکرانه) — a calm gratitude journal, Persian / English"
 requires-python = ">=3.12"
 dependencies = [
